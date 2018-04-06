@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"os"
 )
 
@@ -16,7 +17,13 @@ func main() {
 }
 
 func okay(w http.ResponseWriter, req *http.Request) {
-	log.Printf("responding to %s\n", req.RemoteAddr)
+	dump, err := httputil.DumpRequest(req, false)
+	if err != nil {
+		log.Printf("error dumping request: %s\n", err)
+		return
+	}
+	fmt.Printf("got request: %s", string(dump))
+	fmt.Printf("responding to %s\n", req.RemoteAddr)
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "hello\n")
 }
